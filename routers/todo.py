@@ -22,11 +22,11 @@ class TodoCreate(BaseModel):
 
 @router.get("/", response_model=List[TodoSchema])
 def get_todos(db: Session = Depends(get_db)):
-    return db.query(Todo).all()
+    return db.query(Todo).order_by(Todo.due_date).all()
 
 @router.post("/", response_model=TodoSchema)
 def add_todo(item: TodoCreate, db: Session = Depends(get_db)):
-    new_id = int(datetime.now().timestamp())  # auto-generated
+    new_id = int(datetime.now().timestamp() * 1000)  # more precise ID
     todo = Todo(id=new_id, task=item.task, due_date=item.due_date)
     db.add(todo)
     db.commit()
